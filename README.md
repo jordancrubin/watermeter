@@ -8,7 +8,7 @@
   https://www.youtube.com/c/jordanrubin6502
 
 
-WATERMETER WATERMETER(SignalGPIOpin,useInternalPullupResistor,measure[g|l],metervalue)
+WATERMETER WATERMETER(SignalGPIOpin,useInternalPullupResistor,measure[g|l],debounce,spiffs,metervalue,verbose)
 
 Using GPIO 15                            [15]
 
