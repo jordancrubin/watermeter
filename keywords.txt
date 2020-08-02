@@ -1,0 +1,20 @@
+###########################################
+# Syntax Coloring Map For Ballvalve
+###########################################
+
+###########################################
+# Datatypes (KEYWORD1)
+###########################################
+
+Watermeter	KEYWORD1
+
+###########################################
+# Methods and Functions (KEYWORD2)
+###########################################
+
+checkUpdate KEYWORD2
+getDebounce	KEYWORD2
+initFilesys	KEYWORD2
+readOut	KEYWORD2
+setMeter	KEYWORD2
+setDebounce KEYWORD2
