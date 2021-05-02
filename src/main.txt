@@ -1,5 +1,6 @@
 /*
-  testmeter.ino/cpp - Test programme for reed switch pulse actuated water meters 
+  Change this to main.cpp to compile test programme in platform.io
+  main.cpp - Test programme for reed switch pulse actuated water meters 
   This one designed around the DAE Water Meter Model V-100P
   Most of these meters operate in the same manner, the difference
   can be adjusted as parameters in the instance creation.
