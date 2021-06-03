@@ -28,7 +28,7 @@ Internal pullup resistors are available on the ESP32 but may not be on the Ardui
 
 This latest version attempts to reduce the footprint while making some improvment as I want all wasted space removed.  
 
-Verbose serial output is now religated to the end user not the library, allowing for better user control and about 1K reduction.
+Verbose serial output is now religated to the end user not the library, allowing for better user control and about .5K reduction.
 
 citing an example we see different ways to call init and how to process it.
 
