@@ -46,12 +46,12 @@ citing an example we see different ways to call init and how to process it.
     Serial.println("SPIFFS STARTED");
   }
 
-  The codes are:
-  OK -    Everything worked as expected
-  ERR-    The SPIFFS system was corrupted and couldnt be mounted
-  NEW-    It found no Metre file and created a new one
-  RESET-  The file had data errors and was re-initialized
-  NONE-   The function was executed but the object has no param for SPIFFS support
+  The codes are
+OK -    Everything worked as expected
+ERR-    The SPIFFS system was corrupted and couldnt be mounted
+NEW-    It found no Metre file and created a new one
+RESET-  The file had data errors and was re-initialized
+NONE-   The function was executed but the object has no param for SPIFFS support
 
 
 
