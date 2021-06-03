@@ -12,7 +12,7 @@ Watermeter	KEYWORD1
 # Methods and Functions (KEYWORD2)
 ###########################################
 
-checkUpdate KEYWORD2
+updated KEYWORD2
 getDebounce	KEYWORD2
 initFilesys	KEYWORD2
 readOut	KEYWORD2
