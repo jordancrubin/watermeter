@@ -15,8 +15,7 @@
 int meterSignal;
 bool gallon;
 bool update;
-bool verbose = 0;
-long lastDebounce   = 0;    // Holds last debounce
+long lastDebounce = 0;    // Holds last debounce
 long debounceDelay;  // Between re-polling
 double meter = 0;
 float increment;
@@ -25,7 +24,7 @@ void IRAM_ATTR respondInterrupt();
 
 //CONSTRUCTOR -----------------------------------------------------------
 //WATERMETER WATERMETER(SignalGPIOpin,useInternalPullupResistor,measure[g|l],debouncedelay,useSPIFFS,incriment)
-WATERMETER::WATERMETER(int signalGPIOpin, bool useInternalPullups,char measure, long dbounce ,bool useSPIF, float incr, bool verboseval)
+WATERMETER::WATERMETER(int signalGPIOpin, bool useInternalPullups,char measure, long dbounce ,bool useSPIF, float incr)
 {
   //----------------- initialize initial parameters  
     if (useInternalPullups){
@@ -41,20 +40,17 @@ WATERMETER::WATERMETER(int signalGPIOpin, bool useInternalPullups,char measure, 
     increment = incr;
     debounceDelay = dbounce;
     useSPIFFS = useSPIF;
-    verbose = verboseval;
 }
 // ----------------------------------------------------------------------------]
 
-// FUNCTION - [checkUpdate] - [Checks and responds to the update flag----------]
-bool WATERMETER::checkUpdate(void){
+// FUNCTION - [updated] - [Checks and responds to the update flag--------------]
+bool WATERMETER::updated(void){
   if (update){
-    if(verbose){Serial.println("Updating...");}
     writeFile();
-    update =0;
+    update = 0;
     return 1;    
   }
   else {
-    if(verbose){Serial.println("No update...");}
     return 0;
   }
 } 
@@ -69,35 +65,31 @@ int WATERMETER::getDebounce(void){
 // FUNCTION - [initFilesys] - [Starts up the Meter File system and test--------]
 const char* WATERMETER::initFilesys(void){
      if (useSPIFFS){
-      if(verbose){Serial.println("Initializing FS...");}
       if (!SPIFFS.begin(true)){
-        return "SPIFFS_MOUNT_ERR";
+        return "ERR";
       }
 //DELETE FOR TESTING
 //SPIFFS.remove("/meter.val");      
-      if(!SPIFFS.exists("/meter.val")){   
-        if(verbose){Serial.println("Meter file not found. Creating...");}    
+      if(!SPIFFS.exists("/meter.val")){    
         writeFile();
+        return "NEW";
       }
       else {
-        if(verbose){Serial.println("Meter file found. Reading value into memory...");}
-        readFile();
+        bool reset = readFile();
+        if (reset){return "RESET";}
       }
-    return "OK";
   }
   else {
-    if(verbose){
-        Serial.println("Object constructed without SPIFFS support enabled....");
-        return "NO_SPIFFS_SUPPORT";
-    }
+    return "NONE";
   }
   return "OK";
 }
 // ----------------------------------------------------------------------------]
 
 // FUNCTION - [readFile] - [Opens and reads meter file into meter value--------]
-void WATERMETER::readFile(){
-  File  meterfile = SPIFFS.open("/meter.val","r");
+bool WATERMETER::readFile(){
+  bool resetalarm=0;
+  File meterfile = SPIFFS.open("/meter.val","r");
   char test[20];
   int i=0;
   while (meterfile.available()) {
@@ -105,10 +97,10 @@ void WATERMETER::readFile(){
     test[i] = B;
     i++;
     if (i >=15) {
-      if(verbose){Serial.println("File corrupted, deleting....");}
+      resetalarm=1;
       SPIFFS.remove("/meter.val");
       writeFile();
-      return;
+      return resetalarm;
     }
   }      
   test[i] = '\0';
@@ -116,8 +108,8 @@ void WATERMETER::readFile(){
   char* end; 
   double number; 
   number = strtod(test, &end);
-  if(verbose){Serial.print("READING-> "); Serial.println(number);} 
   meter = number;
+  return resetalarm;
 }
 // ----------------------------------------------------------------------------]
 
@@ -167,7 +159,6 @@ void WATERMETER::writeFile(){
   File  meterfile = SPIFFS.open("/meter.val","w");
   char convert[10];
   sprintf(convert, "%6.2f", meter);
-  if(verbose){Serial.print("WRITING-> "); Serial.println(convert);}
   meterfile.print(convert);
   meterfile.close();
 }

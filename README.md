@@ -8,7 +8,7 @@
   https://www.youtube.com/c/jordanrubin6502
 
 
-WATERMETER WATERMETER(SignalGPIOpin,useInternalPullupResistor,measure[g|l],debounce,spiffs,metervalue,verbose)
+WATERMETER WATERMETER(SignalGPIOpin,useInternalPullupResistor,measure[g|l],debounce,spiffs,metervalue)
 
 Using GPIO 15                            [15]
 
@@ -22,8 +22,38 @@ Use SPIFFS to autosave meter to filesys  [true]
 
 The value of measurment added each time  [.1] i.e. .1 gallons per pulse
 
-Verbose output to the Serial console     [true] 
-
 WATERMETER thisMeter(15,true,'g',100,true,.1,true);
 
 Internal pullup resistors are available on the ESP32 but may not be on the Arduino or certain models requiring external resistors be provided for GPIO pins.  Optimal debounce delay will need to be tested comparing the program to the physical meter accuracy.  The SPIFFS initialization has autocorruption detection, should the file be found to be corrupted on init, it will pull in the meter value from the parameter.  Verbose output is usefill for testing.
+
+This latest version attempts to reduce the footprint while making some improvment as I want all wasted space removed.  
+
+Verbose serial output is now religated to the end user not the library, allowing for better user control and about 1K reduction.
+
+citing an example we see different ways to call init and how to process it.
+
+  Print the result codes out directly as the init is called
+  Serial.println(thisMeter.initFilesys());
+
+
+  Or assign the result to a const char and process it after function execution
+  const char * result = thisMeter.initFilesys();
+  Serial.println(result);
+
+
+  Or use a methodology to test success directly
+  if (strcmp(thisMeter.initFilesys(),"OK")==0){
+    Serial.println("SPIFFS STARTED");
+  }
+
+  The codes are:
+  OK -    Everything worked as expected
+  ERR-    The SPIFFS system was corrupted and couldnt be mounted
+  NEW-    It found no Metre file and created a new one
+  RESET-  The file had data errors and was re-initialized
+  NONE-   The function was executed but the object has no param for SPIFFS support
+
+
+
+
+
