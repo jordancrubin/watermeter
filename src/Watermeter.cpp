@@ -151,6 +151,7 @@ void WATERMETER::setDebounce(int value){
 // FUNCTION - [setMeter] - [Sets the meter from the physical display-----------]
 void WATERMETER::setMeter(double value){
   meter = value;
+  update = 1;
 } 
 // ----------------------------------------------------------------------------]
 
