@@ -4,7 +4,7 @@
   Most of these meters operate in the same manner, the difference
   can be adjusted as parameters in the instance creation.
   https://www.youtube.com/c/jordanrubin6502
-  2020 Jordan Rubin.
+  2020-2022 Jordan Rubin.
 */
 
 // ensure this library description is only included once
@@ -15,7 +15,7 @@
 class WATERMETER
 {
   ////////////// user-accessible "public" interface
-  //WATERMETER(SignalGPIOpin,useInternalPullupResistor,measure[g|l],dbouncedelay,useSPIFFS,increment)
+  //WATERMETER(SignalGPIOpin,useInternalPullupResistor,measure[g|l],dbouncedelay,useSD,increment)
   public:
     WATERMETER(int,bool,char,long,bool,float);
     bool updated(void);

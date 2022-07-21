@@ -5,28 +5,36 @@
   Most of these meters operate in the same manner, the difference
   can be adjusted as parameters in the instance creation.
   https://www.youtube.com/c/jordanrubin6502
-  2020 Jordan Rubin.
+  2020 - 2022 Jordan Rubin.
   */
 #include <Arduino.h> //required for platformio
 #include <Watermeter.h>
 
-//WATERMETER WATERMETER(SignalGPIOpin,useInternalPullupResistor,measure[g|l],metervalue)
-// Using GPIO 15                            [15]
-// Using internal pullup resistors          [true]
-// This meter is designed as gallons        [g]
-// Debounce delay in ms                     [100] 
-// Use SPIFFS to autosave meter to filesys  [true]          
-// The value of measurment added each time  [.1] i.e. .1 gallons per pulse 
+/*
+  WATERMETER WATERMETER(SignalGPIOpin,useInternalPullupResistor,measure[g|l],metervalue)
+   Using GPIO 15                             [15]
+   Using internal pullup resistors           [true]
+   This meter is designed as gallons         [g]
+   Debounce delay in ms                      [100] 
+   Use SD card to autosave meter to filesys [true]          
+   The value of measurment added each time   [.1] i.e. .1 gallons per pulse 
+
+  If SD card is set to true the programme will expect a fat32 formatted SD card installed in the unit.
+  It uses the default connections.  SPIFFS hase been completely removed as of this version, given the
+  constant barrage of read and saves to the ESP32 thousands of times over is unhealthy for the device. 
+
+  CS	  -> GPIO 5
+  MOSI	-> GPIO 23
+  CLK	  -> GPIO 18
+  MISO	-> GPIO 19
+*/
+
 WATERMETER thisMeter(15,true,'g',100,true,.1);
 
 void setup() {
   Serial.begin(38400);
   Serial.println("\n\n***Water Meter Test Programme***");
   delay(3000);
-
-  //This allows the setting of the meter in the object to a specified value
-  //That might match tat of an analogue gauge on the metre
-  thisMeter.setMeter(32.2);
 
 /*
   Print the result codes out directly as the init is called
@@ -37,18 +45,25 @@ void setup() {
   const char * result = thisMeter.initFilesys();
   Serial.println(result);
 
+
+//  Or use a methodology to test success directly
+//  if (strcmp(thisMeter.initFilesys(),"OK")==0){
+//    Serial.println("SPIFFS STARTED");
+//}
+
 /*
-  Or use a methodology to test success directly
-  if (strcmp(thisMeter.initFilesys(),"OK")==0){
-    Serial.println("SPIFFS STARTED");
-}
   The codes are:
   OK -    Everything worked as expected
   ERR-    The SPIFFS system was corrupted and couldnt be mounted
   NEW-    It found no Metre file and created a new one
   RESET-  The file had data errors and was re-initialized
   NONE-   The function was executed but the object has no param for SPIFFS support
+
+ This allows the setting of the meter in the object to a specified value
+ That might match tat of an analogue gauge on the metre
 */
+ // thisMeter.setMeter(32.2);
+
 }
 
 void loop() {

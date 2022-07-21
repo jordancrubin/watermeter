@@ -8,7 +8,7 @@
   https://www.youtube.com/c/jordanrubin6502
 
 
-WATERMETER WATERMETER(SignalGPIOpin,useInternalPullupResistor,measure[g|l],debounce,spiffs,metervalue)
+WATERMETER WATERMETER(SignalGPIOpin,useInternalPullupResistor,measure[g|l],debounce,sdcard,metervalue)
 
 Using GPIO 15                            [15]
 
@@ -18,13 +18,24 @@ This meter is designed as gallons        [g]
 
 Debounce delay in ms                     [100] 
 
-Use SPIFFS to autosave meter to filesys  [true]          
+Use SDcard to autosave meter to filesys  [true]          
 
 The value of measurment added each time  [.1] i.e. .1 gallons per pulse
 
 WATERMETER thisMeter(15,true,'g',100,true,.1,true);
 
-Internal pullup resistors are available on the ESP32 but may not be on the Arduino or certain models requiring external resistors be provided for GPIO pins.  Optimal debounce delay will need to be tested comparing the program to the physical meter accuracy.  The SPIFFS initialization has autocorruption detection, should the file be found to be corrupted on init, it will pull in the meter value from the parameter.  Verbose output is usefill for testing.
+
+  If SD card is set to true the programme will expect a fat32 formatted SD card installed in the unit.
+  It uses the default connections.  SPIFFS hase been completely removed as of this version, given the
+  constant barrage of read and saves to the ESP32 thousands of times over is unhealthy for the device. 
+
+  CS	  -> GPIO 5
+  MOSI	-> GPIO 23
+  CLK	  -> GPIO 18
+  MISO	-> GPIO 19
+
+
+Internal pullup resistors are available on the ESP32 but may not be on the Arduino or certain models requiring external resistors be provided for GPIO pins.  Optimal debounce delay will need to be tested comparing the program to the physical meter accuracy.  The SD card initialization has autocorruption detection, should the file be found to be corrupted on init, it will pull in the meter value from the parameter.  Verbose output is usefull for testing.
 
 This latest version attempts to reduce the footprint while making some improvment as I want all wasted space removed.  
 

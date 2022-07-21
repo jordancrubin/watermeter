@@ -4,27 +4,28 @@
   Most of these meters operate in the same manner, the difference
   can be adjusted as parameters in the instance creation.
   https://www.youtube.com/c/jordanrubin6502
-  2020 Jordan Rubin.
+  2020 - 2022 Jordan Rubin.
   */
-#define FORMAT_SPIFFS_IF_FAILED true
 
 #include <Arduino.h> // Required for Platform.io
 #include <Watermeter.h>
-#include <SPIFFS.h>
+#include <SD.h>
+#include <FS.h>
 
 int meterSignal;
 bool gallon;
 bool update;
 long lastDebounce = 0;    // Holds last debounce
-long debounceDelay;  // Between re-polling
+long debounceDelay;       // Between re-polling
 double meter = 0;
 float increment;
-bool useSPIFFS;
+bool useSDcard;
 void IRAM_ATTR respondInterrupt();
 
 //CONSTRUCTOR -----------------------------------------------------------
-//WATERMETER WATERMETER(SignalGPIOpin,useInternalPullupResistor,measure[g|l],debouncedelay,useSPIFFS,incriment)
-WATERMETER::WATERMETER(int signalGPIOpin, bool useInternalPullups,char measure, long dbounce ,bool useSPIF, float incr)
+
+//WATERMETER::WATERMETER(int signalGPIOpin, bool useInternalPullups,char measure, long dbounce ,bool useSD, float incr)
+WATERMETER::WATERMETER(int signalGPIOpin, bool useInternalPullups,char measure, long dbounce ,bool useSD, float incr)
 {
   //----------------- initialize initial parameters  
     if (useInternalPullups){
@@ -39,7 +40,7 @@ WATERMETER::WATERMETER(int signalGPIOpin, bool useInternalPullups,char measure, 
     meterSignal = signalGPIOpin;
     increment = incr;
     debounceDelay = dbounce;
-    useSPIFFS = useSPIF;
+    useSDcard = useSD;
 }
 // ----------------------------------------------------------------------------]
 
@@ -64,20 +65,25 @@ int WATERMETER::getDebounce(void){
 
 // FUNCTION - [initFilesys] - [Starts up the Meter File system and test--------]
 const char* WATERMETER::initFilesys(void){
-     if (useSPIFFS){
-      if (!SPIFFS.begin(true)){
-        return "ERR";
-      }
+  if (useSDcard){    
+    if(!SD.begin()){ 
+      return "ERR";
+    }
 //DELETE FOR TESTING
-//SPIFFS.remove("/meter.val");      
-      if(!SPIFFS.exists("/meter.val")){    
-        writeFile();
-        return "NEW";
-      }
-      else {
-        bool reset = readFile();
-        if (reset){return "RESET";}
-      }
+//SD.remove("/meter/meter.val");      
+    File root = SD.open("/meter");
+    if(!root.isDirectory()){
+      SD.mkdir("/meter");
+    }  
+    root.close();
+    if(!SD.exists("/meter/meter.val")){ 
+      writeFile();
+      return "NEW";
+    }
+    else {
+      bool reset = readFile();
+      if (reset){return "RESET";}
+    }
   }
   else {
     return "NONE";
@@ -89,7 +95,7 @@ const char* WATERMETER::initFilesys(void){
 // FUNCTION - [readFile] - [Opens and reads meter file into meter value--------]
 bool WATERMETER::readFile(){
   bool resetalarm=0;
-  File meterfile = SPIFFS.open("/meter.val","r");
+  File meterfile = SD.open("/meter/meter.val");
   char test[20];
   int i=0;
   while (meterfile.available()) {
@@ -98,7 +104,7 @@ bool WATERMETER::readFile(){
     i++;
     if (i >=15) {
       resetalarm=1;
-      SPIFFS.remove("/meter.val");
+      SD.remove("/meter/meter.val");
       writeFile();
       return resetalarm;
     }
@@ -157,7 +163,7 @@ void WATERMETER::setMeter(double value){
 
 // FUNCTION - [writeFile] - [Opens or creates meter file, writes value---------]
 void WATERMETER::writeFile(){
-  File  meterfile = SPIFFS.open("/meter.val","w");
+  File meterfile = SD.open("/meter/meter.val",FILE_WRITE);
   char convert[10];
   sprintf(convert, "%6.2f", meter);
   meterfile.print(convert);
