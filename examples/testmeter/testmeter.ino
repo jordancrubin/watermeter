@@ -6,22 +6,24 @@
   can be adjusted as parameters in the instance creation.
   https://www.youtube.com/c/jordanrubin6502
   2020 - 2022 Jordan Rubin.
-  */
+*/
 #include <Arduino.h> //required for platformio
 #include <Watermeter.h>
 
 /*
-  WATERMETER WATERMETER(SignalGPIOpin,useInternalPullupResistor,measure[g|l],metervalue)
+  WATERMETER WATERMETER(SignalGPIOpin,useInternalPullupResistor,measure[g|l],metervalue,saveInterval)
    Using GPIO 15                             [15]
    Using internal pullup resistors           [true]
    This meter is designed as gallons         [g]
    Debounce delay in ms                      [100] 
-   Use SD card to autosave meter to filesys [true]          
+   Use SD card to autosave meter to filesys  [true]          
    The value of measurment added each time   [.1] i.e. .1 gallons per pulse 
+   The save interval to SD in seconds        [30]  
 
   If SD card is set to true the programme will expect a fat32 formatted SD card installed in the unit.
   It uses the default connections.  SPIFFS hase been completely removed as of this version, given the
   constant barrage of read and saves to the ESP32 thousands of times over is unhealthy for the device. 
+  The save interval further limits constant writes to the SD card by limiting updates to the interval. 
 
   CS	  -> GPIO 5
   MOSI	-> GPIO 23
@@ -29,7 +31,7 @@
   MISO	-> GPIO 19
 */
 
-WATERMETER thisMeter(15,true,'g',100,true,.1);
+WATERMETER thisMeter(15,true,'g',100,true,.1,30);
 
 void setup() {
   Serial.begin(38400);
