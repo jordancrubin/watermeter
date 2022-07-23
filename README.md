@@ -22,13 +22,16 @@ Use SDcard to autosave meter to filesys  [true]
 
 The value of measurment added each time  [.1] i.e. .1 gallons per pulse
 
-WATERMETER thisMeter(15,true,'g',100,true,.1,true);
+The save interval to SD in seconds        [30]  
+
+WATERMETER thisMeter(15,true,'g',100,true,.1,true,30);
 
 
   If SD card is set to true the programme will expect a fat32 formatted SD card installed in the unit.
   It uses the default connections.  SPIFFS hase been completely removed as of this version, given the
   constant barrage of read and saves to the ESP32 thousands of times over is unhealthy for the device. 
-
+  The save interval further limits constant writes to the SD card by limiting updates to the interval. 
+  
   CS	  -> GPIO 5
   MOSI	-> GPIO 23
   CLK	  -> GPIO 18
