@@ -5,7 +5,7 @@
   can be adjusted as parameters in the instance creation.
   https://www.youtube.com/c/jordanrubin6502
   2020 - 2022 Jordan Rubin.
-  */
+*/
 
 #include <Arduino.h> // Required for Platform.io
 #include <Watermeter.h>
@@ -13,19 +13,20 @@
 #include <FS.h>
 
 int meterSignal;
-bool gallon;
+bool gallon = 0;
 bool update;
 long lastDebounce = 0;    // Holds last debounce
 long debounceDelay;       // Between re-polling
+long lastUpdate = 0;
 double meter = 0;
 float increment;
+int saveint;    
 bool useSDcard;
 void IRAM_ATTR respondInterrupt();
 
 //CONSTRUCTOR -----------------------------------------------------------
-
-//WATERMETER::WATERMETER(int signalGPIOpin, bool useInternalPullups,char measure, long dbounce ,bool useSD, float incr)
-WATERMETER::WATERMETER(int signalGPIOpin, bool useInternalPullups,char measure, long dbounce ,bool useSD, float incr)
+//WATERMETER::WATERMETER(int signalGPIOpin, bool useInternalPullups,char measure, long dbounce ,bool useSD, float incr, int saveInterval)
+WATERMETER::WATERMETER(int signalGPIOpin, bool useInternalPullups,char measure, long dbounce ,bool useSD, float incr, int saveInterval)
 {
   //----------------- initialize initial parameters  
     if (useInternalPullups){
@@ -35,10 +36,10 @@ WATERMETER::WATERMETER(int signalGPIOpin, bool useInternalPullups,char measure, 
       pinMode(signalGPIOpin, INPUT);
     }
     if (measure == 'g'){gallon = 1;}
-    else {gallon = 0;}
     attachInterrupt(signalGPIOpin, respondInterrupt, FALLING);
     meterSignal = signalGPIOpin;
     increment = incr;
+    saveint = saveInterval * 1000;
     debounceDelay = dbounce;
     useSDcard = useSD;
 }
@@ -47,13 +48,14 @@ WATERMETER::WATERMETER(int signalGPIOpin, bool useInternalPullups,char measure, 
 // FUNCTION - [updated] - [Checks and responds to the update flag--------------]
 bool WATERMETER::updated(void){
   if (update){
-    writeFile();
+    if ((millis() - lastUpdate) > saveint) { 
+      writeFile();
+      lastUpdate = millis(); 
+    }
     update = 0;
-    return 1;    
+    return 1;
   }
-  else {
-    return 0;
-  }
+  return 0;
 } 
 // ----------------------------------------------------------------------------]
 
@@ -157,7 +159,7 @@ void WATERMETER::setDebounce(int value){
 // FUNCTION - [setMeter] - [Sets the meter from the physical display-----------]
 void WATERMETER::setMeter(double value){
   meter = value;
-  update = 1;
+  writeFile();
 } 
 // ----------------------------------------------------------------------------]
 

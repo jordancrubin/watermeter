@@ -15,9 +15,9 @@
 class WATERMETER
 {
   ////////////// user-accessible "public" interface
-  //WATERMETER(SignalGPIOpin,useInternalPullupResistor,measure[g|l],dbouncedelay,useSD,increment)
+  //WATERMETER(SignalGPIOpin,useInternalPullupResistor,measure[g|l],dbouncedelay,useSD,increment,saveinterval)
   public:
-    WATERMETER(int,bool,char,long,bool,float);
+    WATERMETER(int,bool,char,long,bool,float,int);
     bool updated(void);
     int getDebounce(void);
     const char* initFilesys(void);
@@ -27,7 +27,7 @@ class WATERMETER
     void setMeter(double);
     void setDebounce(int);
     
-//  ////////////// library-accessible "private" interface
+  //////////////// library-accessible "private" interface
   private:
     int value;
     bool readFile(void);
