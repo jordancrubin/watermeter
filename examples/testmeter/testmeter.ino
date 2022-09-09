@@ -11,7 +11,7 @@
 #include <Watermeter.h>
 
 /*
-  WATERMETER WATERMETER(SignalGPIOpin,useInternalPullupResistor,measure[g|l],metervalue,saveInterval)
+  WATERMETER WATERMETER(SignalGPIOpin,useInternalPullupResistor,measure[g|l],metervalue,saveInterval,debug)
    Using GPIO 15                             [15]
    Using internal pullup resistors           [true]
    This meter is designed as gallons         [g]
@@ -19,6 +19,8 @@
    Use SD card to autosave meter to filesys  [true]          
    The value of measurment added each time   [.1] i.e. .1 gallons per pulse 
    The save interval to SD in seconds        [30]  
+   Toggle some debug to console              [true]
+
 
   If SD card is set to true the programme will expect a fat32 formatted SD card installed in the unit.
   It uses the default connections.  SPIFFS hase been completely removed as of this version, given the
@@ -31,7 +33,7 @@
   MISO	-> GPIO 19
 */
 
-WATERMETER thisMeter(15,true,'g',100,true,.1,30);
+WATERMETER thisMeter(15,true,'g',100,true,.1,30,true);
 
 void setup() {
   Serial.begin(38400);

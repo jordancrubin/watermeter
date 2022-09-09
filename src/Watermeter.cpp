@@ -15,6 +15,7 @@
 int meterSignal;
 bool gallon = 0;
 bool update;
+bool debug = false;
 long lastDebounce = 0;    // Holds last debounce
 long debounceDelay;       // Between re-polling
 long lastUpdate = 0;
@@ -25,8 +26,8 @@ bool useSDcard;
 void IRAM_ATTR respondInterrupt();
 
 //CONSTRUCTOR -----------------------------------------------------------
-//WATERMETER::WATERMETER(int signalGPIOpin, bool useInternalPullups,char measure, long dbounce ,bool useSD, float incr, int saveInterval)
-WATERMETER::WATERMETER(int signalGPIOpin, bool useInternalPullups,char measure, long dbounce ,bool useSD, float incr, int saveInterval)
+//WATERMETER::WATERMETER(int signalGPIOpin, bool useInternalPullups,char measure, long dbounce ,bool useSD, float incr, int saveInterval, bool debug)
+WATERMETER::WATERMETER(int signalGPIOpin, bool useInternalPullups,char measure, long dbounce ,bool useSD, float incr, int saveInterval, bool debugger)
 {
   //----------------- initialize initial parameters  
     if (useInternalPullups){
@@ -39,6 +40,7 @@ WATERMETER::WATERMETER(int signalGPIOpin, bool useInternalPullups,char measure, 
     attachInterrupt(signalGPIOpin, respondInterrupt, FALLING);
     meterSignal = signalGPIOpin;
     increment = incr;
+    debug = debugger;
     saveint = saveInterval * 1000;
     debounceDelay = dbounce;
     useSDcard = useSD;
@@ -51,8 +53,8 @@ bool WATERMETER::updated(void){
     if ((millis() - lastUpdate) > saveint) { 
       writeFile();
       lastUpdate = millis(); 
+      update = 0;
     }
-    update = 0;
     return 1;
   }
   return 0;
@@ -169,6 +171,7 @@ void WATERMETER::writeFile(){
   char convert[10];
   sprintf(convert, "%6.2f", meter);
   meterfile.print(convert);
+  if(debug){Serial.print("meter writesd: ");Serial.println(convert);}
   meterfile.close();
 }
 // ----------------------------------------------------------------------------]
