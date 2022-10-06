@@ -50,6 +50,7 @@ WATERMETER::WATERMETER(int signalGPIOpin, bool useInternalPullups,char measure, 
 // FUNCTION - [updated] - [Checks and responds to the update flag--------------]
 bool WATERMETER::updated(void){
   if (update){
+    if(saveint == 0){return 1;}
     if ((millis() - lastUpdate) > saveint) { 
       writeFile();
       lastUpdate = millis(); 
