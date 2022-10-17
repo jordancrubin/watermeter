@@ -15,10 +15,11 @@
 class WATERMETER
 {
   ////////////// user-accessible "public" interface
-  //WATERMETER(SignalGPIOpin,useInternalPullupResistor,measure[g|l],dbouncedelay,useSD,increment,saveinterval,debug)
+  //WATERMETER(SignalGPIOpin,useInternalPullupResistor,measure[g|l],dbouncedelay,useFS,increment,saveinterval,debug)
   public:
     WATERMETER(int,bool,char,long,bool,float,int,bool);
     bool updated(void);
+    bool useFS;
     int getDebounce(void);
     const char* initFilesys(void);
     bool isUpdated(void); 

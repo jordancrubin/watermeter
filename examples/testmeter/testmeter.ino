@@ -11,16 +11,18 @@
 #include <Watermeter.h>
 
 /*
-  WATERMETER WATERMETER(SignalGPIOpin,useInternalPullupResistor,measure[g|l],metervalue,saveInterval,debug)
+  WATERMETER WATERMETER(SignalGPIOpin,useInternalPullupResistor,measure[g|l],debounce,useFilesys,metervalue,saveinterval)
    Using GPIO 15                             [15]
    Using internal pullup resistors           [true]
    This meter is designed as gallons         [g]
    Debounce delay in ms                      [100] 
    Use SD card to autosave meter to filesys  [true]          
    The value of measurment added each time   [.1] i.e. .1 gallons per pulse 
-   The save interval to SD in seconds        [30]  
+   The save interval to FS in seconds        [30] 0 disables autosave 
    Toggle some debug to console              [true]
 
+  When saving to the filesystem, one type of filesystem must be uncommented in Watermeter.cpp USE_SPIFFS or USE_SD.
+  You MUST choose one, and ONLY one. Software arrives defaulted to USE_SPIFFS.
 
   If SD card is set to true the programme will expect a fat32 formatted SD card installed in the unit.
   It uses the default connections.  SPIFFS hase been completely removed as of this version, given the
