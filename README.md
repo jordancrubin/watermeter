@@ -2,13 +2,14 @@
  The advanced watermeter project
   This one designed around the DAE Water Meter Model V-100P
   Most of these meters operate in the same manner, the difference
-  can be adjusted as parameters in the instance creation.
+  can be adjusted as parameters in the instance creation. Saving works
+  With either SPIFFS or SDFS as a compile time parameter.
 
   This was created as part of a larger irrigation project found at.
   https://www.youtube.com/c/jordanrubin6502
 
 
-WATERMETER WATERMETER(SignalGPIOpin,useInternalPullupResistor,measure[g|l],debounce,sdcard,metervalue,saveinterval)
+//WATERMETER::WATERMETER(int signalGPIOpin, bool useInternalPullups,char measure, long dbounce ,bool useFS, float incr, int saveInterval, bool debug)
 
 Using GPIO 15                            [15]
 
@@ -18,16 +19,18 @@ This meter is designed as gallons        [g]
 
 Debounce delay in ms                     [100] 
 
-Use SDcard to autosave meter to filesys  [true]          
+Use File System to save meter to filesys [true]          
 
 The value of measurment added each time  [.1] i.e. .1 gallons per pulse
 
-The save interval to SD in seconds        [30]  
+The save interval to filesystem in seconds [30] 0 disables autosave  
 
 WATERMETER thisMeter(15,true,'g',100,true,.1,true,30);
 
+  When saving to the filesystem, one type of filesystem must be uncommented in Watermeter.cpp USE_SPIFFS or USE_SD.
+  You MUST choose one, and ONLY one. Software arrives defaulted to USE_SPIFFS.
 
-  If SD card is set to true the programme will expect a fat32 formatted SD card installed in the unit.
+  If USE_SD card is choosen the programme will expect a fat32 formatted SD card installed in the unit.
   It uses the default connections.  SPIFFS hase been completely removed as of this version, given the
   constant barrage of read and saves to the ESP32 thousands of times over is unhealthy for the device. 
   The save interval further limits constant writes to the SD card by limiting updates to the interval. 
